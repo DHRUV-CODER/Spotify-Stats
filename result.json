@@ -1,0 +1,88 @@
+{
+    "timestamp": 1619291027027,
+    "context": null,
+    "progress_ms": 213098,
+    "item": {
+        "album": {
+            "album_type": "single",
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/1McMsnEElThX1knmY4oliG"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/1McMsnEElThX1knmY4oliG",
+                    "id": "1McMsnEElThX1knmY4oliG",
+                    "name": "Olivia Rodrigo",
+                    "type": "artist",
+                    "uri": "spotify:artist:1McMsnEElThX1knmY4oliG"
+                }
+            ],
+            "external_urls": {
+                "spotify": "https://open.spotify.com/album/66FPnVL9G4CMKy3wvaGTcr"
+            },
+            "href": "https://api.spotify.com/v1/albums/66FPnVL9G4CMKy3wvaGTcr",
+            "id": "66FPnVL9G4CMKy3wvaGTcr",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://i.scdn.co/image/ab67616d0000b27359779689e1d9c15ca2f76b84",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://i.scdn.co/image/ab67616d00001e0259779689e1d9c15ca2f76b84",
+                    "width": 300
+                },
+                {
+                    "height": 64,
+                    "url": "https://i.scdn.co/image/ab67616d0000485159779689e1d9c15ca2f76b84",
+                    "width": 64
+                }
+            ],
+            "name": "drivers license",
+            "release_date": "2021-01-08",
+            "release_date_precision": "day",
+            "total_tracks": 1,
+            "type": "album",
+            "uri": "spotify:album:66FPnVL9G4CMKy3wvaGTcr"
+        },
+        "artists": [
+            {
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/artist/1McMsnEElThX1knmY4oliG"
+                },
+                "href": "https://api.spotify.com/v1/artists/1McMsnEElThX1knmY4oliG",
+                "id": "1McMsnEElThX1knmY4oliG",
+                "name": "Olivia Rodrigo",
+                "type": "artist",
+                "uri": "spotify:artist:1McMsnEElThX1knmY4oliG"
+            }
+        ],
+        "disc_number": 1,
+        "duration_ms": 242013,
+        "explicit": true,
+        "external_ids": {
+            "isrc": "USUG12004749"
+        },
+        "external_urls": {
+            "spotify": "https://open.spotify.com/track/7lPN2DXiMsVn7XUKtOW1CS"
+        },
+        "href": "https://api.spotify.com/v1/tracks/7lPN2DXiMsVn7XUKtOW1CS",
+        "id": "7lPN2DXiMsVn7XUKtOW1CS",
+        "is_local": false,
+        "is_playable": true,
+        "name": "drivers license",
+        "popularity": 97,
+        "preview_url": null,
+        "track_number": 1,
+        "type": "track",
+        "uri": "spotify:track:7lPN2DXiMsVn7XUKtOW1CS"
+    },
+    "currently_playing_type": "track",
+    "actions": {
+        "disallows": {
+            "resuming": true
+        }
+    },
+    "is_playing": true
+}
