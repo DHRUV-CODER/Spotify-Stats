@@ -1,5 +1,22 @@
 <!DOCTYPE html>
 <head>
+    <script type="text/javascript">
+        function get_state() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      resp=JSON.parse(this.responseText);
+      if (resp["state"]=="changed") {
+     location.reload();
+      }
+    }
+  };
+  xhttp.open("GET", "state", true);
+  xhttp.send();
+}
+    </script>
+    <link rel="shortcut icon" href="https://developer.spotify.com/images/favicon.ico" />
+
     <title>Spotify Stats</title>
     <style>
         body {
@@ -24,11 +41,15 @@
 </head>
 <body>
     <center>
-        <h1>Currently Playing {{ cm }}</h1>
+        <h1 id="demo">Currently Playing {{ cm }}</h1>
         <h1>By {{author}}</h1>
         <img src={{img}} alt="author img">
     </center>
 
-      
+      <script type="text/javascript">
+          setInterval(() =>{
+            get_state();
+          },5000)
+      </script>
 </body>
 </html>
