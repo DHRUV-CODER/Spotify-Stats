@@ -1,5 +1,4 @@
-> <a href="https://spotifycplaying.herokuapp.com/" target="_blank"> </a>
- 
+> <a href="https://spotifycplaying.herokuapp.com/" target="_blank">Visit The Website</a> 
 >perks
 >reload on next song thnx to `adith` for the implementation and `cookies` so u dont need to `login everytime` and in **future i will add stats also**
 
