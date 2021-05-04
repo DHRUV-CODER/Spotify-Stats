@@ -3,14 +3,19 @@ import time
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import json
-import requests as r
+import os
 app = Flask(__name__)
 
-app.secret_key = ""
-app.config['SESSION_COOKIE_NAME'] = "Dhruv's Cookie"  
+app.secret_key = "some-key"
 TOKEN_INFO = "token-info"
+SCOPE = "user-read-currently-playing"
 Current_Music="{}"
 Current_Music=json.loads(Current_Music)
+
+@app.before_request
+def before_request():
+    if os.path.exists(".cache"):
+        os.remove(".cache")
 
 @app.route('/')
 def login():
@@ -20,53 +25,73 @@ def login():
 
 
 @app.route('/redirect')
-def redirectPage():
-    sp_oauth = create_spotify_oauth()
+def authorize():
+    sp_auth = create_spotify_oauth()
     session.clear()
     code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code)
-    session[TOKEN_INFO] = token_info
-    return redirect(url_for('spotify_reg', _external=True,_scheme='https'))
+    
+    token_info = sp_auth.get_access_token(code=code)
+    session['token_info'] = token_info
+    return redirect(url_for('info',_external=True,_scheme = 'https'))
 
 
+def get_token(session):
+    token_valid = False
+    token_info = session.get("token_info", {})
 
-def get_token():
-    token_info = session.get(TOKEN_INFO, None)
-    if not token_info:
-        raise "exception"
+    # Checking if the session already has a token stored
+    if not (session.get('token_info', False)):
+        token_valid = False
+        return token_info, token_valid
+
+    # Checking if token has expired
     now = int(time.time())
-    is_expired = token_info['expires_at'] - now < 60
-    if (is_expired):
+    is_token_expired = session.get('token_info').get('expires_at') - now < 60
+
+    # Refreshing token if it has expired
+    if (is_token_expired):
+        # Don't reuse a SpotifyOAuth object because they store token info and you could leak user tokens if you reuse a SpotifyOAuth object
         sp_oauth = create_spotify_oauth()
-        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-    return token_info
+        token_info = sp_oauth.refresh_access_token(session.get('token_info').get('refresh_token'))
 
-@app.route('/stats')
-def spotify_reg():
+    token_valid = True
+    return token_info, token_valid
+
+
+@app.route('/info')
+def info():
     global Current_Music
-    try:
-        token_info = get_token()
-    except:
-        print("Not Logged In")
-        return redirect(url_for('login' , _external=False ,_scheme='https'))
-    sp = spotipy.Spotify(auth=token_info['access_token'])
-    res = sp.currently_playing()
-    Current_Music = res['item']['album']['name']
-    Music_Link = res['item']['album']['external_urls']['spotify']
-    Author_of_music = res['item']['artists'][0]['name']
-    Image_Preview_of_Song = res['item']['album']['images'][1]['url']
-    lyrics = r.get(f'https://some-random-api.ml/lyrics?title={Current_Music}').json()
-    final_lyrics = lyrics['lyrics']
-    return render_template('stats.html', cm=Current_Music, author=Author_of_music, img=Image_Preview_of_Song,link = Music_Link)
+    session['token_info'], authorized = get_token(session)
+    session.modified = True
+    if not authorized:
+        return redirect(url_for('login', _external=False,_scheme = 'https'))
 
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    
+    res = sp.currently_playing()
+    
+    try:
+        Current_Music = res['item']['album']['name']
+        Music_Link = res['item']['album']['external_urls']['spotify']
+        Author_of_music = res['item']['artists'][0]['name']
+        Image_Preview_of_Song = res['item']['album']['images'][1]['url']
+    except:
+        Current_Music = "No Music"
+        Music_Link = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        Author_of_music = "No One"
+        Image_Preview_of_Song = "https://cdn2.iconfinder.com/data/icons/dashboard-website/24/amount_Copy_3-512.png"
+        
+    return render_template('index.html', cm=Current_Music, author=Author_of_music, img=Image_Preview_of_Song,link = Music_Link)
+    
+    
+    return render_template('index.html',)
+ 
 @app.route('/state')
 def check():
-    try:
-        token_info = get_token()
-    except:
-        print("Not Logged In")
-        return redirect(url_for('login', _external=False,_scheme='https'))
-    sp = spotipy.Spotify(auth=token_info['access_token'])
+    session['token_info'], authorized = get_token(session)
+    session.modified = True
+    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     res = sp.currently_playing()
     cm = res['item']['album']['name']
     if cm!=Current_Music:
@@ -74,21 +99,18 @@ def check():
         resp='''{"state":"changed"}'''
     else:
         resp='''{"state":"same"}'''
-    return resp
-
-
-@app.errorhandler(500)
-def page_not_found(e):
-    # note that we set the 404 status explicitly
-    return "<center><p>Play Song or If AD is going then skip it</p></center>", 404
+    return resp 
+      
 
 def create_spotify_oauth():
     return SpotifyOAuth(
         client_id="",
         client_secret="",
-        redirect_uri=url_for('redirectPage', _external=True,_scheme='https'),
-        scope="user-read-currently-playing")
+        redirect_uri=url_for('authorize', _external=True,_scheme = 'https'),
+        scope=SCOPE)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
